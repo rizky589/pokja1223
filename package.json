@@ -1,6 +1,7 @@
 {
   "name": "pokja-bps-labura",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "description": "Portal Kerja BPS Labuhanbatu Utara - Supabase sync",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
