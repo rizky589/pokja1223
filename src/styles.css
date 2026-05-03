@@ -51,7 +51,7 @@ button {
 
 .portalShell {
   display: grid;
-  grid-template-rows: 70px minmax(420px, 1fr) 105px;
+  grid-template-rows: 64px minmax(420px, 1fr) auto;
   min-height: 100vh;
   overflow: hidden;
   position: relative;
@@ -85,20 +85,23 @@ button {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding-left: clamp(1rem, 9.5vw, 8.6rem);
-  padding-right: clamp(1rem, 9.5vw, 8.6rem);
+  padding-left: clamp(0.85rem, 5vw, 8.6rem);
+  padding-right: clamp(0.85rem, 5vw, 8.6rem);
 }
 
 .portalHeader {
   background: rgba(21, 29, 46, 0.97);
   box-shadow: 0 10px 30px rgba(5, 8, 16, 0.22);
-  z-index: 2;
+  z-index: 20;
+  height: 64px;
 }
 
 .portalFooter {
   background: rgba(8, 12, 25, 0.95);
   border-top: 1px solid rgba(255, 255, 255, 0.03);
   justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   z-index: 2;
 }
 
@@ -113,9 +116,9 @@ button {
 .portalLogoImage {
   display: block;
   flex: 0 0 auto;
-  height: 50px;
+  height: 44px;
   object-fit: contain;
-  width: 70px;
+  width: 60px;
 }
 
 .portalLogo.small .portalLogoImage {
@@ -307,9 +310,9 @@ button {
 
 .appGrid {
   display: grid;
-  gap: clamp(0.9rem, 1.35vw, 1.15rem);
+  gap: clamp(0.75rem, 1.35vw, 1.15rem);
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-top: 1.85rem;
+  margin-top: 1.5rem;
   max-width: 1085px;
   width: 100%;
 }
@@ -417,23 +420,25 @@ button {
 
 .modalLayer {
   align-items: center;
-  background: rgba(4, 7, 14, 0.75);
+  background: rgba(4, 7, 14, 0.8);
   display: flex;
   inset: 0;
   justify-content: center;
-  padding: 1.2rem;
+  padding: 1rem;
   position: fixed;
-  z-index: 10;
+  z-index: 30;
+  overflow-y: auto;
 }
 
 /* ── New Login Design (style1.css) ─────────────────────────────────────── */
 .loginContainer {
   align-items: center;
   display: flex;
-  height: 340px;
+  height: min(340px, 90vw);
   justify-content: center;
   position: relative;
-  width: 340px;
+  width: min(340px, 90vw);
+  flex-shrink: 0;
 }
 
 /* Rotating circle of bars */
@@ -517,9 +522,9 @@ button {
   background: rgba(30, 42, 58, 0.97);
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
-  padding: 2rem 2.2rem 1.6rem;
+  padding: clamp(1.4rem, 5vw, 2rem) clamp(1.2rem, 5vw, 2.2rem) 1.6rem;
   position: relative;
-  width: 360px;
+  width: min(360px, calc(100vw - 2rem));
   z-index: 10;
 }
 
@@ -793,6 +798,7 @@ button {
   display: grid;
   grid-template-columns: 250px minmax(0, 1fr);
   min-height: 100vh;
+  position: relative;
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
@@ -1946,9 +1952,10 @@ button {
   margin: 0.25rem 0 0;
 }
 
+/* ── Tablet (≤ 1060px) ───────────────────────────────────────────────── */
 @media (max-width: 1060px) {
   .portalShell {
-    grid-template-rows: 70px minmax(560px, 1fr) auto;
+    grid-template-rows: 64px minmax(560px, 1fr) auto;
   }
 
   .appGrid,
@@ -1961,22 +1968,8 @@ button {
     max-width: 700px;
   }
 
-  .portalFooter {
-    gap: 1rem;
-    padding-bottom: 1.4rem;
-    padding-top: 1.4rem;
-  }
-
   .workPortal {
-    grid-template-columns: 1fr;
-  }
-
-  .workSidebar {
-    min-height: auto;
-  }
-
-  .workNav {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: 220px minmax(0, 1fr);
   }
 
   .shortcutForm {
@@ -1989,64 +1982,238 @@ button {
   }
 }
 
-@media (max-width: 680px) {
+/* ── Mobile (≤ 768px) — Sidebar jadi bottom nav ──────────────────────── */
+@media (max-width: 768px) {
+  /* Portal landing page */
   .portalShell {
-    grid-template-rows: auto minmax(560px, 1fr) auto;
+    grid-template-rows: 64px minmax(0, 1fr) auto;
   }
 
-  .portalHeader,
-  .portalFooter {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    padding-top: 1rem;
+  .portalHeader {
+    height: 64px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .portalLogo small {
+    display: none;
   }
 
   .loginButton {
-    width: 100%;
+    font-size: 0.82rem;
+    min-height: 36px;
+    padding: 0.45rem 0.85rem;
   }
 
   .heroSection {
     justify-content: flex-start;
-    padding-top: 4.2rem;
+    padding: 2.5rem 1rem 2rem;
+    text-align: center;
   }
 
   .heroSection h1 {
-    font-size: clamp(3rem, 17vw, 4.6rem);
+    font-size: clamp(2.8rem, 16vw, 4.2rem);
   }
 
   .heroSection p {
-    margin: 1.2rem 0 1.5rem;
+    font-size: 0.9rem;
+    margin: 1rem 0 1.4rem;
   }
 
-  .appGrid {
-    grid-template-columns: 1fr;
-    margin-top: 1.5rem;
-  }
-
-  .appCard {
-    min-height: 76px;
-  }
-
-  .workTopbar,
-  .welcomePanel {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .userBadge {
+  .searchBox {
+    max-width: 100%;
     width: 100%;
   }
 
-  .workNav,
-  .statGrid,
+  .appGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin-top: 1.2rem;
+  }
+
+  .appCard {
+    min-height: 68px;
+    padding: 0.75rem;
+    gap: 0.7rem;
+  }
+
+  .appCopy strong {
+    font-size: 0.85rem;
+  }
+
+  .appCopy small {
+    font-size: 0.72rem;
+  }
+
+  /* ── Work Portal — Sidebar → Bottom Navigation ── */
+  .workPortal {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    padding-bottom: 70px; /* ruang untuk bottom nav */
+  }
+
+  .workSidebar {
+    /* Pindah ke bawah sebagai bottom nav */
+    background: linear-gradient(180deg, #0f1824 0%, #070c17 100%);
+    border-right: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    left: 0;
+    min-height: 0;
+    order: 2;
+    position: fixed;
+    right: 0;
+    z-index: 50;
+    /* Sembunyikan logo & logout di bottom nav */
+    grid-template-rows: unset;
+    grid-template-columns: unset;
+    padding: 0;
+    align-items: center;
+  }
+
+  /* Sembunyikan logo di sidebar saat mobile */
+  .workSidebar .portalLogo {
+    display: none;
+  }
+
+  /* Sembunyikan logout di sidebar — pindah ke topbar */
+  .logoutButton {
+    display: none;
+  }
+
+  .workNav {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    padding: 0;
+    width: 100%;
+    flex: 1;
+    align-content: unset;
+  }
+
+  /* Hapus label "MENU" di mobile */
+  .workNav::before {
+    display: none;
+  }
+
+  .workNavButton {
+    border-radius: 0;
+    border: 0;
+    flex: 1;
+    flex-direction: column;
+    font-size: 0.62rem;
+    gap: 0.25rem;
+    justify-content: center;
+    min-height: 60px;
+    padding: 0.5rem 0.25rem;
+    text-align: center;
+    align-items: center;
+  }
+
+  .workNavButton svg {
+    opacity: 0.9;
+  }
+
+  .workNavButton.active {
+    background: linear-gradient(180deg, rgba(255, 165, 0, 0.18), rgba(255, 140, 0, 0.08));
+    border-bottom: 3px solid #ffa500;
+    border-radius: 0;
+    color: #ffa500;
+  }
+
+  /* Topbar */
+  .workMain {
+    order: 1;
+  }
+
+  .workTopbar {
+    padding: 0.65rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .workTopbar h1 {
+    font-size: 1.1rem;
+  }
+
+  .userBadge {
+    gap: 0.45rem;
+    padding: 0.3rem 0.6rem 0.3rem 0.35rem;
+  }
+
+  .userBadge > span {
+    height: 30px;
+    width: 30px;
+    font-size: 0.72rem;
+    border-radius: 7px;
+  }
+
+  .userBadge strong {
+    font-size: 0.78rem;
+  }
+
+  .userBadge small {
+    font-size: 0.65rem;
+  }
+
+  /* Tombol logout muncul di topbar */
+  .workTopbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Dashboard */
+  .workContent {
+    padding: 0.85rem;
+  }
+
+  .welcomePanel {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .welcomePanel h2 {
+    font-size: 1.3rem;
+  }
+
+  .workPrimaryButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .statGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statCard {
+    min-height: 110px;
+    padding: 0.85rem;
+  }
+
+  .statCard strong {
+    font-size: 1.6rem;
+  }
+
+  .dashboardColumns,
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+
   .internalAppsGrid,
-  .internalAppsGrid.expanded,
+  .internalAppsGrid.expanded {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .documentGrid,
   .adminGrid {
-    grid-template-columns: 1fr;
-    max-width: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .taskList article {
@@ -2058,18 +2225,98 @@ button {
   }
 
   .panelHeader {
-    gap: 0.8rem;
+    gap: 0.7rem;
+    flex-wrap: wrap;
   }
 
-  .panelHeader,
-  .shortcutActions {
-    flex-direction: column;
+  .panelHeader h3 {
+    font-size: 0.98rem;
   }
 
   .addShortcutButton,
   .cancelShortcutButton,
   .saveShortcutButton {
     width: 100%;
+  }
+
+  .shortcutActions {
+    flex-direction: column;
+  }
+
+  /* Login modal di HP */
+  .modalLayer {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .loginContainer {
+    display: none; /* sembunyikan animasi bars di HP — terlalu besar */
+  }
+
+  .loginBox {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-radius: 24px 24px 0 0;
+    margin: 0;
+    padding: 1.8rem 1.4rem 2.5rem;
+    width: 100%;
+    animation: slideUpModal 0.3s ease;
+  }
+
+  @keyframes slideUpModal {
+    from {
+      transform: translateY(60px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .loginLogoImg {
+    height: 48px;
+    width: 48px;
+  }
+
+  .loginTitle {
+    font-size: 1.3rem;
+  }
+
+  /* URL fetch form di mobile */
+  .manualEditFields {
+    grid-template-columns: 1fr;
+  }
+
+  .urlFetchRow {
+    flex-direction: column;
+  }
+
+  .urlFetchBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Kecil sekali (≤ 400px) ──────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .appGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .internalAppsGrid,
+  .internalAppsGrid.expanded,
+  .documentGrid,
+  .adminGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .workNavButton {
+    font-size: 0.55rem;
   }
 }
 
@@ -2109,4 +2356,116 @@ button {
   object-fit: contain;
   padding: 3px;
   width: 40px;
+}
+
+/* ── Mobile Logout Button (muncul di topbar HP) ─────────────────────────── */
+.mobileLogoutBtn {
+  display: none; /* disembunyikan di desktop */
+}
+
+@media (max-width: 768px) {
+  .mobileLogoutBtn {
+    align-items: center;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 9px;
+    color: #ef4444;
+    cursor: pointer;
+    display: inline-flex;
+    flex-shrink: 0;
+    height: 36px;
+    justify-content: center;
+    transition: background 160ms ease;
+    width: 36px;
+  }
+
+  .mobileLogoutBtn:hover,
+  .mobileLogoutBtn:active {
+    background: rgba(239, 68, 68, 0.24);
+  }
+
+  /* Safe-area untuk iPhone (home indicator bar) */
+  .workSidebar {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .workPortal {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ── DB / Sync Status Badge ─────────────────────────────────────────────── */
+.dbBadge {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.73rem;
+  font-weight: 800;
+  gap: 0.3rem;
+  padding: 0.28rem 0.65rem;
+  white-space: nowrap;
+}
+
+.dbBadge.synced {
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+.dbBadge.local {
+  background: #fef9c3;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.dbBadge.loading {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  gap: 0.5rem;
+}
+
+/* ── Card Actions (edit + delete tombol di InternalAppCard) ─────────────── */
+.internalAppCard.editable {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.cardActions {
+  align-items: stretch;
+  border-left: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+}
+
+.editShortcutButton,
+.deleteShortcutButton {
+  align-items: center;
+  align-self: stretch;
+  border: 0;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 900;
+  justify-content: center;
+  min-width: 42px;
+  padding: 0;
+  transition: background 150ms ease;
+}
+
+.editShortcutButton {
+  background: #eef6ff;
+  border-bottom: 1px solid #e2e8f0;
+  color: #0d74c5;
+}
+
+.editShortcutButton:hover {
+  background: #dbeafe;
+}
+
+.deleteShortcutButton {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.deleteShortcutButton:hover {
+  background: #ffe4e6;
 }

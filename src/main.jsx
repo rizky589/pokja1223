@@ -1,5 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { supabase, isSupabaseReady } from "./supabase.js";
 
 // ─── KREDENSIAL LOGIN (ganti sesuai kebutuhan) ────────────────────────────────
 const VALID_CREDENTIALS = [
@@ -15,6 +16,7 @@ import {
   CheckCircle2,
   ClipboardList,
   Clock,
+  Cloud,
   Database,
   FileText,
   FolderOpen,
@@ -31,9 +33,11 @@ import {
   Search,
   Settings,
   ShieldCheck,
+  Trash2,
   User,
   UserRound,
   UsersRound,
+  WifiOff,
   X
 } from "lucide-react";
 import "./styles.css";
@@ -118,14 +122,12 @@ const documents = [
   { name: "Format Laporan Kegiatan Lapangan", type: "XLSX", owner: "Fungsi Statistik" }
 ];
 
-function loadSavedShortcuts() {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
+// ─── Fallback: load dari localStorage (jika Supabase belum dikonfigurasi) ────
+function loadSavedShortcutsLocal() {
+  if (typeof window === "undefined") return [];
   try {
-    const savedApps = JSON.parse(window.localStorage.getItem("pokja-shortcuts") || "[]");
-    return savedApps.map((app) => ({
+    const saved = JSON.parse(window.localStorage.getItem("pokja-shortcuts") || "[]");
+    return saved.map((app) => ({
       ...app,
       icon: iconOptions[app.logoIcon] ?? LayoutGrid,
       logoColor: app.logoColor ?? "blue",
@@ -136,6 +138,22 @@ function loadSavedShortcuts() {
   } catch {
     return [];
   }
+}
+
+// ─── Helper: mapping baris Supabase → objek app ───────────────────────────
+function rowToApp(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description || "",
+    href: row.href || "",
+    icon: iconOptions[row.logo_icon] ?? LayoutGrid,
+    logoIcon: row.logo_icon || "grid",
+    logoColor: row.logo_color || "blue",
+    logoImage: row.logo_image || "",
+    logoFileName: row.logo_file_name || "",
+    custom: true
+  };
 }
 
 function AppIcon({ app, size = 23 }) {
@@ -204,9 +222,9 @@ function StatCard({ item }) {
   );
 }
 
-function InternalAppCard({ app, onEdit }) {
+function InternalAppCard({ app, onEdit, onDelete }) {
   return (
-    <article className={app.custom && onEdit ? "internalAppCard editable" : "internalAppCard"}>
+    <article className={app.custom && (onEdit || onDelete) ? "internalAppCard editable" : "internalAppCard"}>
       <a className="internalAppLink" href={app.href} target="_blank" rel="noopener noreferrer">
         <AppIcon app={app} />
         <span>
@@ -216,10 +234,23 @@ function InternalAppCard({ app, onEdit }) {
         <ArrowUpRight size={17} />
       </a>
       {app.custom && onEdit ? (
-        <button className="editShortcutButton" type="button" onClick={() => onEdit(app)}>
-          <Pencil size={16} />
-          Edit
-        </button>
+        <div className="cardActions">
+          <button className="editShortcutButton" type="button" onClick={() => onEdit(app)} title="Edit">
+            <Pencil size={15} />
+          </button>
+          {onDelete && (
+            <button
+              className="deleteShortcutButton"
+              type="button"
+              title="Hapus"
+              onClick={() => {
+                if (window.confirm(`Hapus shortcut "${app.name}"?`)) onDelete(app.id);
+              }}
+            >
+              <Trash2 size={15} />
+            </button>
+          )}
+        </div>
       ) : null}
     </article>
   );
@@ -307,7 +338,7 @@ function getFaviconUrl(url) {
   }
 }
 
-function ApplicationsPage({ portalApps, customAppsCount, onAddApp, onUpdateApp }) {
+function ApplicationsPage({ portalApps, customAppsCount, onAddApp, onUpdateApp, onDeleteApp, dbStatus }) {
   const emptyShortcutForm = {
     name: "",
     description: "",
@@ -535,10 +566,22 @@ function ApplicationsPage({ portalApps, customAppsCount, onAddApp, onUpdateApp }
           <h3>Aplikasi Internal</h3>
           <p>Shortcut layanan kerja dan aplikasi operasional satker.</p>
         </div>
-        <button className="addShortcutButton" type="button" onClick={handleStartAdd}>
-          <Plus size={17} />
-          Tambah Shortcut
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
+          {/* Indikator status sinkronisasi */}
+          {dbStatus === "synced" && (
+            <span className="dbBadge synced"><Cloud size={13} /> Cloud</span>
+          )}
+          {dbStatus === "local" && (
+            <span className="dbBadge local"><WifiOff size={13} /> Lokal</span>
+          )}
+          {dbStatus === "loading" && (
+            <span className="dbBadge loading"><span className="spinnerDot" /> Memuat...</span>
+          )}
+          <button className="addShortcutButton" type="button" onClick={handleStartAdd}>
+            <Plus size={17} />
+            Tambah Shortcut
+          </button>
+        </div>
       </div>
 
       {isAdding ? (
@@ -702,7 +745,12 @@ function ApplicationsPage({ portalApps, customAppsCount, onAddApp, onUpdateApp }
 
       <div className="internalAppsGrid expanded">
         {portalApps.map((app) => (
-          <InternalAppCard app={app} key={app.id ?? app.name} onEdit={handleStartEdit} />
+          <InternalAppCard
+            app={app}
+            key={app.id ?? app.name}
+            onEdit={handleStartEdit}
+            onDelete={onDeleteApp}
+          />
         ))}
       </div>
     </section>
@@ -861,7 +909,7 @@ function AdminPage() {
   );
 }
 
-function WorkContent({ activeMenu, portalApps, customAppsCount, onAddApp, onUpdateApp }) {
+function WorkContent({ activeMenu, portalApps, customAppsCount, onAddApp, onUpdateApp, onDeleteApp, dbStatus }) {
   if (activeMenu === "aplikasi") {
     return (
       <ApplicationsPage
@@ -869,6 +917,8 @@ function WorkContent({ activeMenu, portalApps, customAppsCount, onAddApp, onUpda
         customAppsCount={customAppsCount}
         onAddApp={onAddApp}
         onUpdateApp={onUpdateApp}
+        onDeleteApp={onDeleteApp}
+        dbStatus={dbStatus}
       />
     );
   }
@@ -880,12 +930,13 @@ function WorkContent({ activeMenu, portalApps, customAppsCount, onAddApp, onUpda
   return <DashboardHome portalApps={portalApps} />;
 }
 
-function WorkPortal({ onLogout, portalApps, customAppsCount, onAddApp, onUpdateApp, activeUser }) {
+function WorkPortal({ onLogout, portalApps, customAppsCount, onAddApp, onUpdateApp, onDeleteApp, dbStatus, activeUser }) {
   const [activeMenu, setActiveMenu] = React.useState("dashboard");
   const active = workMenus.find((menu) => menu.key === activeMenu) ?? workMenus[0];
 
   return (
     <main className="workPortal">
+      {/* Sidebar — desktop: kiri, HP: bottom navigation bar */}
       <aside className="workSidebar">
         <PortalLogo />
         <nav className="workNav" aria-label="Menu portal kerja">
@@ -904,6 +955,7 @@ function WorkPortal({ onLogout, portalApps, customAppsCount, onAddApp, onUpdateA
             );
           })}
         </nav>
+        {/* Logout button — disembunyikan di HP via CSS, muncul di desktop */}
         <button className="logoutButton" type="button" onClick={onLogout}>
           <LogOut size={18} />
           Keluar
@@ -913,15 +965,26 @@ function WorkPortal({ onLogout, portalApps, customAppsCount, onAddApp, onUpdateA
       <section className="workMain">
         <header className="workTopbar">
           <div>
-
             <h1>{active.label}</h1>
           </div>
-          <div className="userBadge">
-            <span>{activeUser ? activeUser.slice(0, 2).toUpperCase() : "AL"}</span>
-            <div>
-              <strong>{activeUser || "Admin Labura"}</strong>
-              <small>Operator Portal</small>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <div className="userBadge">
+              <span>{activeUser ? activeUser.slice(0, 2).toUpperCase() : "AL"}</span>
+              <div>
+                <strong>{activeUser || "Admin Labura"}</strong>
+                <small>Operator Portal</small>
+              </div>
             </div>
+            {/* Tombol logout khusus mobile — hanya tampil di HP */}
+            <button
+              className="mobileLogoutBtn"
+              type="button"
+              onClick={onLogout}
+              title="Keluar"
+              aria-label="Keluar"
+            >
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
         <div className="workContent">
@@ -931,6 +994,8 @@ function WorkPortal({ onLogout, portalApps, customAppsCount, onAddApp, onUpdateA
             customAppsCount={customAppsCount}
             onAddApp={onAddApp}
             onUpdateApp={onUpdateApp}
+            onDeleteApp={onDeleteApp}
+            dbStatus={dbStatus}
           />
         </div>
       </section>
@@ -1059,36 +1124,98 @@ function App() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [activeUser, setActiveUser] = React.useState("");
-  const [customApps, setCustomApps] = React.useState(loadSavedShortcuts);
+  const [customApps, setCustomApps] = React.useState([]);
+  // "loading" | "synced" | "local"
+  const [dbStatus, setDbStatus] = React.useState(isSupabaseReady ? "loading" : "local");
+
   const portalApps = React.useMemo(() => [...customApps, ...apps], [customApps]);
   const filteredApps = portalApps.filter((app) =>
     `${app.name} ${app.description}`.toLowerCase().includes(query.toLowerCase())
   );
 
+  // ─── Load shortcuts dari Supabase (atau localStorage sebagai fallback) ────
   React.useEffect(() => {
-    const storableApps = customApps.map(
-      ({ id, name, description, href, logoIcon, logoColor, logoImage, logoFileName }) => ({
-        id,
-        name,
-        description,
-        href,
-        logoIcon,
-        logoColor,
-        logoImage,
-        logoFileName
-      })
-    );
-    window.localStorage.setItem("pokja-shortcuts", JSON.stringify(storableApps));
-  }, [customApps]);
+    async function loadShortcuts() {
+      if (isSupabaseReady) {
+        setDbStatus("loading");
+        const { data, error } = await supabase
+          .from("shortcuts")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-  const handleAddApp = (newApp) => {
-    setCustomApps((currentApps) => [newApp, ...currentApps]);
+        if (!error && data) {
+          setCustomApps(data.map(rowToApp));
+          setDbStatus("synced");
+        } else {
+          console.warn("Supabase error, fallback ke localStorage:", error);
+          setCustomApps(loadSavedShortcutsLocal());
+          setDbStatus("local");
+        }
+      } else {
+        // Supabase belum dikonfigurasi — pakai localStorage
+        setCustomApps(loadSavedShortcutsLocal());
+        setDbStatus("local");
+      }
+    }
+    loadShortcuts();
+  }, []);
+
+  // ─── Simpan ke localStorage bila mode lokal ───────────────────────────────
+  React.useEffect(() => {
+    if (dbStatus === "local") {
+      const storable = customApps.map(
+        ({ id, name, description, href, logoIcon, logoColor, logoImage, logoFileName }) => ({
+          id, name, description, href, logoIcon, logoColor, logoImage, logoFileName
+        })
+      );
+      window.localStorage.setItem("pokja-shortcuts", JSON.stringify(storable));
+    }
+  }, [customApps, dbStatus]);
+
+  // ─── Tambah shortcut ─────────────────────────────────────────────────────
+  const handleAddApp = async (newApp) => {
+    setCustomApps((curr) => [newApp, ...curr]);
+    if (isSupabaseReady) {
+      const { error } = await supabase.from("shortcuts").insert({
+        id: newApp.id,
+        name: newApp.name,
+        description: newApp.description || "",
+        href: newApp.href || "",
+        logo_icon: newApp.logoIcon || "grid",
+        logo_color: newApp.logoColor || "blue",
+        logo_image: newApp.logoImage || "",
+        logo_file_name: newApp.logoFileName || ""
+      });
+      if (error) console.error("Gagal simpan ke Supabase:", error.message);
+    }
   };
 
-  const handleUpdateApp = (updatedApp) => {
-    setCustomApps((currentApps) =>
-      currentApps.map((app) => (app.id === updatedApp.id ? updatedApp : app))
+  // ─── Edit shortcut ───────────────────────────────────────────────────────
+  const handleUpdateApp = async (updatedApp) => {
+    setCustomApps((curr) =>
+      curr.map((app) => (app.id === updatedApp.id ? updatedApp : app))
     );
+    if (isSupabaseReady) {
+      const { error } = await supabase.from("shortcuts").update({
+        name: updatedApp.name,
+        description: updatedApp.description || "",
+        href: updatedApp.href || "",
+        logo_icon: updatedApp.logoIcon || "grid",
+        logo_color: updatedApp.logoColor || "blue",
+        logo_image: updatedApp.logoImage || "",
+        logo_file_name: updatedApp.logoFileName || ""
+      }).eq("id", updatedApp.id);
+      if (error) console.error("Gagal update ke Supabase:", error.message);
+    }
+  };
+
+  // ─── Hapus shortcut ──────────────────────────────────────────────────────
+  const handleDeleteApp = async (appId) => {
+    setCustomApps((curr) => curr.filter((app) => app.id !== appId));
+    if (isSupabaseReady) {
+      const { error } = await supabase.from("shortcuts").delete().eq("id", appId);
+      if (error) console.error("Gagal hapus dari Supabase:", error.message);
+    }
   };
 
   const handleLogin = (username) => {
@@ -1105,6 +1232,8 @@ function App() {
         customAppsCount={customApps.length}
         onAddApp={handleAddApp}
         onUpdateApp={handleUpdateApp}
+        onDeleteApp={handleDeleteApp}
+        dbStatus={dbStatus}
         activeUser={activeUser}
       />
     );
