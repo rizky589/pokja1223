@@ -598,7 +598,7 @@ button {
 .loginSubtitle {
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.78rem;
-  margin: 0 0 1.8rem;
+  margin: 0 0 1.9rem;
   text-align: center;
 }
 
@@ -2465,8 +2465,13 @@ button {
     width: 30px;
   }
 
-  .appCopy strong { font-size: 0.74rem; }
-  .appCopy small  { font-size: 0.62rem; }
+  .appCopy strong {
+    font-size: 0.74rem;
+  }
+
+  .appCopy small {
+    font-size: 0.62rem;
+  }
 
   .statGrid {
     grid-template-columns: 1fr;
@@ -2652,8 +2657,13 @@ button {
 }
 
 @keyframes bannerFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .bannerCarousel {
@@ -2669,8 +2679,15 @@ button {
 }
 
 @keyframes bannerSlideUp {
-  from { opacity: 0; transform: translateY(40px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .bannerClose {
@@ -2714,19 +2731,17 @@ button {
 
 /* Gradient agar teks terbaca — kuat di kiri, transparan di kanan */
 .bannerGradient {
-  background: linear-gradient(
-    90deg,
-    rgba(8, 13, 28, 0.92) 0%,
-    rgba(8, 13, 28, 0.7) 50%,
-    rgba(8, 13, 28, 0.1) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(8, 13, 28, 0.92) 0%,
+      rgba(8, 13, 28, 0.7) 50%,
+      rgba(8, 13, 28, 0.1) 100%);
   inset: 0;
   position: absolute;
 }
 
 /* Konten teks — bottom-left seperti referensi */
 .bannerContent {
-  bottom: 3rem;
+  bottom: 4.5rem;
   left: 2.5rem;
   max-width: 480px;
   position: absolute;
@@ -2870,4 +2885,4 @@ button {
     right: 0.8rem;
     top: 0.8rem;
   }
-}
+}
