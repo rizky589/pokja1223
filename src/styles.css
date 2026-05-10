@@ -2815,29 +2815,58 @@ button {
   width: 24px;
 }
 
-/* Mobile: sheet dari bawah */
+/* Mobile: floating centered card seperti referensi */
 @media (max-width: 600px) {
   .bannerOverlay {
-    align-items: flex-end;
-    padding: 0;
+    align-items: center;
+    padding: 1.2rem;
   }
 
   .bannerCarousel {
-    border-radius: 18px 18px 0 0;
-    max-height: 78vh;
+    border-radius: 20px;
+    max-height: 80vh;
+    width: 100%;
   }
 
   .bannerSlide {
-    min-height: 340px;
+    border-radius: 20px;
+    min-height: 68vw;
+  }
+
+  /* Dots pindah ke ATAS-KIRI seperti referensi */
+  .bannerDots {
+    bottom: unset;
+    justify-content: flex-start;
+    left: 1.2rem;
+    padding: 0;
+    top: 1.2rem;
+    width: auto;
   }
 
   .bannerContent {
-    bottom: 2.5rem;
-    left: 1.25rem;
-    max-width: calc(100vw - 2rem);
+    bottom: 1.8rem;
+    left: 1.2rem;
+    max-width: calc(100% - 2.4rem);
   }
 
-  .bannerTitle { font-size: 1.6rem; }
-  .bannerDesc { font-size: 0.84rem; margin-bottom: 1rem; }
-  .bannerBtn { font-size: 0.74rem; padding: 0.6rem 1.4rem; }
-}
+  .bannerTitle {
+    font-size: clamp(1.4rem, 7vw, 2rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .bannerDesc {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .bannerBtn {
+    font-size: 0.72rem;
+    padding: 0.65rem 1.3rem;
+  }
+
+  .bannerClose {
+    right: 0.8rem;
+    top: 0.8rem;
+  }
+}
