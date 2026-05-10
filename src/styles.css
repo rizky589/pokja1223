@@ -253,8 +253,8 @@ button {
   align-items: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 9.5vw, 8.6rem);
+  justify-content: flex-start;
+  padding: clamp(0.5rem, 2vw, 1.5rem) clamp(1rem, 9.5vw, 8.6rem) clamp(2rem, 5vw, 4rem);
   text-align: center;
   z-index: 1;
 }
@@ -420,28 +420,37 @@ button {
 
 .modalLayer {
   align-items: center;
-  background: rgba(4, 7, 14, 0.8);
+  background: rgba(4, 7, 14, 0.85);
   display: flex;
   inset: 0;
   justify-content: center;
-  padding: 1rem;
+  overflow-y: auto;
+  padding: 1.5rem 1rem;
   position: fixed;
   z-index: 30;
-  overflow-y: auto;
 }
 
-/* ── New Login Design (style1.css) ─────────────────────────────────────── */
-.loginContainer {
-  align-items: center;
-  display: flex;
-  height: min(340px, 90vw);
-  justify-content: center;
-  position: relative;
-  width: min(340px, 90vw);
+/* Login Design - persis style1.css / login.html */
+
+/* Pusatkan bars + box secara overlay */
+.loginModalCenter {
   flex-shrink: 0;
+  position: relative;
 }
 
-/* Rotating circle of bars */
+/* 440x440 — radius ~236px, bars melingkar di DEPAN card */
+.loginContainer {
+  height: 440px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 440px;
+  z-index: 20;
+}
+
+/* circle-container yang BERPUTAR — persis style1.css */
 .loginCircle {
   animation: loginRotate 20s linear infinite;
   height: 100%;
@@ -449,22 +458,6 @@ button {
   position: absolute;
   top: 0;
   width: 100%;
-}
-
-.container {
-  position: relative;
-  width: 340px;
-  height: 340px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.circle-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  animation: rotate 20s linear infinite;
 }
 
 @keyframes loginRotate {
@@ -477,55 +470,107 @@ button {
   }
 }
 
-
+/* Bar — transform-origin center 220px = tengah container 440px */
 .loginBar {
-  background: #3a5070;
+  background: #4a5f7f;
   border-radius: 4px;
   display: block;
-  height: 30px;
+  height: 35px;
   left: 50%;
   position: absolute;
   top: 0;
-  transform-origin: center 170px;
+  transform-origin: center 220px;
   transition: background 0.3s ease;
-  width: 7px;
+  width: 8px;
 }
 
-/* Animate active bars — CSS nth-child trick */
-.loginBar:nth-child(1),
-.loginBar:nth-child(2),
-.loginBar:nth-child(3),
-.loginBar:nth-child(4),
-.loginBar:nth-child(5),
-.loginBar:nth-child(6),
-.loginBar:nth-child(7),
-.loginBar:nth-child(8) {
-  animation: barGlow 4s ease-in-out infinite;
+/* Active — oranye menyala */
+.loginBar.active {
+  background: linear-gradient(180deg, #ffa500, #ff8c00);
+  box-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
 }
 
-@keyframes barGlow {
 
-  0%,
-  100% {
-    background: #3a5070;
-    box-shadow: none;
-  }
 
-  50% {
-    background: linear-gradient(180deg, #ffa500, #ff8c00);
-    box-shadow: 0 0 16px rgba(255, 165, 0, 0.8);
-  }
-}
-
-/* Login box card */
+/* Login Box Card */
 .loginBox {
-  background: rgba(30, 42, 58, 0.97);
+  background: rgba(30, 42, 58, 0.95);
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
-  padding: clamp(1.4rem, 5vw, 2rem) clamp(1.2rem, 5vw, 2.2rem) 1.6rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  padding: 40px;
   position: relative;
-  width: min(360px, calc(100vw - 2rem));
+  width: min(420px, calc(100vw - 2rem));
   z-index: 10;
+}
+
+@media (max-width: 600px) {
+  .modalLayer {
+    padding: 1rem 0.75rem;
+  }
+
+  /* 380x380 — radius 190px, pas di sekitar card ~360px mobile */
+  .loginContainer {
+    height: 380px;
+    width: 380px;
+  }
+
+  .loginBox {
+    border-radius: 16px;
+    padding: 1.1rem 1rem 0.9rem;
+    width: calc(100vw - 1.5rem);
+  }
+
+  .loginLogo {
+    margin-bottom: 0.25rem;
+  }
+
+  .loginLogoImg {
+    height: 38px;
+    width: 38px;
+  }
+
+  .loginTitle {
+    font-size: 1.3rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.1rem;
+  }
+
+  .loginSubtitle {
+    font-size: 0.7rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .loginForm2 {
+    gap: 0.75rem;
+  }
+
+  .loginInputGroup input {
+    font-size: 0.85rem;
+    padding: 10px 36px 10px 13px;
+  }
+
+  .loginSubmitBtn {
+    font-size: 0.88rem;
+    min-height: 42px;
+    margin-top: 0.2rem;
+  }
+
+  .loginError {
+    font-size: 0.78rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .loginFooter {
+    font-size: 0.63rem;
+    margin-top: 0.5rem;
+  }
+
+  .closeButton {
+    height: 26px;
+    right: 0.6rem;
+    top: 0.6rem;
+    width: 26px;
+  }
 }
 
 .loginLogo {
@@ -542,8 +587,8 @@ button {
 
 .loginTitle {
   color: #ffa500;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 600;
   letter-spacing: 2px;
   margin: 0 0 0.25rem;
   text-align: center;
@@ -553,14 +598,14 @@ button {
 .loginSubtitle {
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.78rem;
-  margin: 0 0 1.2rem;
+  margin: 0 0 1.8rem;
   text-align: center;
 }
 
-/* Input groups */
+/* Input Groups */
 .loginForm2 {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .loginInputGroup {
@@ -568,36 +613,37 @@ button {
 }
 
 .loginInputGroup input {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 25px;
   color: #fff;
   font-size: 0.9rem;
   outline: none;
-  padding: 0.75rem 2.8rem 0.75rem 1.1rem;
+  padding: 12px 40px 12px 15px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
 }
 
 .loginInputGroup input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .loginInputGroup input:focus {
   border-color: #ffa500;
-  box-shadow: 0 0 14px rgba(255, 165, 0, 0.28);
+  box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
 }
 
 .loginInputIcon {
   align-items: center;
   background: transparent;
   border: 0;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.5);
   display: inline-flex;
+  font-size: 1rem;
   height: 100%;
   justify-content: center;
   position: absolute;
-  right: 14px;
+  right: 15px;
   top: 0;
   width: 28px;
 }
@@ -610,37 +656,56 @@ button {
   color: #ffa500;
 }
 
-/* Submit button */
+/* Forgot Password */
+.loginForgot {
+  margin-bottom: 1.5rem;
+  margin-top: -1rem;
+  text-align: right;
+}
+
+.loginForgot a {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.loginForgot a:hover {
+  color: #ffa500;
+}
+
+/* Submit Button */
 .loginSubmitBtn {
   background: linear-gradient(90deg, #ffa500, #ff8c00);
   border: none;
   border-radius: 25px;
   color: #fff;
   cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
   margin-top: 0.4rem;
   min-height: 48px;
   overflow: hidden;
   position: relative;
   text-transform: uppercase;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
 }
 
 .loginSubmitBtn:hover:not(:disabled) {
-  box-shadow: 0 8px 24px rgba(255, 165, 0, 0.45);
+  box-shadow: 0 10px 30px rgba(255, 165, 0, 0.5);
   transform: translateY(-2px);
 }
 
 .loginSubmitBtn:disabled {
-  opacity: 0.65;
   cursor: not-allowed;
+  opacity: 0.65;
 }
 
+/* Ripple effect */
 .loginSubmitBtn::before {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   content: "";
   height: 0;
@@ -648,15 +713,83 @@ button {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  transition: width 0.5s ease, height 0.5s ease;
+  transition: width 0.6s ease, height 0.6s ease;
   width: 0;
 }
 
 .loginSubmitBtn:active::before {
-  height: 240px;
-  width: 240px;
+  height: 300px;
+  width: 300px;
 }
 
+/* Social Login */
+.loginSocial {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.loginSocial p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.loginSocialIcons {
+  display: flex;
+  gap: 0.9rem;
+  justify-content: center;
+}
+
+.loginSocialIcon {
+  align-items: center;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.1rem;
+  height: 40px;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 40px;
+}
+
+.loginSocialIcon.facebook {
+  background: #3b5998;
+}
+
+.loginSocialIcon.twitter {
+  background: #000;
+}
+
+.loginSocialIcon.google {
+  background: #db4437;
+}
+
+.loginSocialIcon:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-5px) scale(1.1);
+}
+
+/* Signup Link */
+.loginSignup {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.loginSignup a {
+  color: #ffa500;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.loginSignup a:hover {
+  color: #ff8c00;
+  text-decoration: underline;
+}
+
+/* Footer & close button */
 .loginFooter {
   color: rgba(255, 255, 255, 0.35);
   font-size: 0.72rem;
@@ -682,6 +815,8 @@ button {
 .closeButton:hover {
   background: rgba(255, 255, 255, 0.16);
 }
+
+
 
 /* login error */
 .loginError {
@@ -1984,6 +2119,7 @@ button {
 
 /* ── Mobile (≤ 768px) — Sidebar jadi bottom nav ──────────────────────── */
 @media (max-width: 768px) {
+
   /* Portal landing page */
   .portalShell {
     grid-template-rows: 64px minmax(0, 1fr) auto;
@@ -2049,7 +2185,8 @@ button {
   .workPortal {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
-    padding-bottom: 70px; /* ruang untuk bottom nav */
+    padding-bottom: 70px;
+    /* ruang untuk bottom nav */
   }
 
   .workSidebar {
@@ -2145,7 +2282,7 @@ button {
     padding: 0.3rem 0.6rem 0.3rem 0.35rem;
   }
 
-  .userBadge > span {
+  .userBadge>span {
     height: 30px;
     width: 30px;
     font-size: 0.72rem;
@@ -2250,7 +2387,8 @@ button {
   }
 
   .loginContainer {
-    display: none; /* sembunyikan animasi bars di HP — terlalu besar */
+    display: none;
+    /* sembunyikan animasi bars di HP — terlalu besar */
   }
 
   .loginBox {
@@ -2268,6 +2406,7 @@ button {
       transform: translateY(60px);
       opacity: 0;
     }
+
     to {
       transform: translateY(0);
       opacity: 1;
@@ -2360,7 +2499,8 @@ button {
 
 /* ── Mobile Logout Button (muncul di topbar HP) ─────────────────────────── */
 .mobileLogoutBtn {
-  display: none; /* disembunyikan di desktop */
+  display: none;
+  /* disembunyikan di desktop */
 }
 
 @media (max-width: 768px) {
@@ -2468,4 +2608,212 @@ button {
 
 .deleteShortcutButton:hover {
   background: #ffe4e6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BANNER CAROUSEL POPUP
+═══════════════════════════════════════════════════════════════════════════ */
+
+.bannerOverlay {
+  align-items: center;
+  animation: bannerFadeIn 0.35s ease;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 1.5rem;
+  position: fixed;
+  z-index: 50;
+}
+
+@keyframes bannerFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.bannerCarousel {
+  animation: bannerSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #0d1525;
+  border-radius: 18px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+  max-height: 90vh;
+  max-width: 820px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+@keyframes bannerSlideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.bannerClose {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  transition: background 0.2s, transform 0.2s;
+  width: 36px;
+  z-index: 10;
+}
+
+.bannerClose:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* Slide: full background image */
+.bannerSlide {
+  background-color: #111a28;
+  background-position: center;
+  background-size: cover;
+  min-height: 440px;
+  position: relative;
+  transition: opacity 0.4s ease;
+  width: 100%;
+}
+
+.bannerSlide.animating {
+  opacity: 0.35;
+}
+
+/* Gradient agar teks terbaca — kuat di kiri, transparan di kanan */
+.bannerGradient {
+  background: linear-gradient(
+    90deg,
+    rgba(8, 13, 28, 0.92) 0%,
+    rgba(8, 13, 28, 0.7) 50%,
+    rgba(8, 13, 28, 0.1) 100%
+  );
+  inset: 0;
+  position: absolute;
+}
+
+/* Konten teks — bottom-left seperti referensi */
+.bannerContent {
+  bottom: 3rem;
+  left: 2.5rem;
+  max-width: 480px;
+  position: absolute;
+  z-index: 2;
+}
+
+.bannerTag {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 0.9rem;
+  padding: 0.28rem 0.9rem;
+  text-transform: uppercase;
+}
+
+.bannerTitle {
+  color: #fff;
+  font-size: clamp(1.7rem, 4vw, 2.8rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin: 0 0 0.8rem;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+.bannerHighlight {
+  color: #4ab3f4;
+}
+
+.bannerDesc {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: clamp(0.85rem, 1.4vw, 1rem);
+  line-height: 1.65;
+  margin: 0 0 1.5rem;
+}
+
+.bannerBtn {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 30px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 0.75rem 1.8rem;
+  text-transform: uppercase;
+  transition: background 0.25s, border-color 0.25s, transform 0.2s;
+}
+
+.bannerBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Dots navigasi */
+.bannerDots {
+  bottom: 1.1rem;
+  display: flex;
+  gap: 0.45rem;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+}
+
+.bannerDot {
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 8px;
+  padding: 0;
+  transition: background 0.25s, width 0.25s, border-radius 0.25s;
+  width: 8px;
+}
+
+.bannerDot.active {
+  background: #fff;
+  border-radius: 4px;
+  width: 24px;
+}
+
+/* Mobile: sheet dari bawah */
+@media (max-width: 600px) {
+  .bannerOverlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .bannerCarousel {
+    border-radius: 18px 18px 0 0;
+    max-height: 78vh;
+  }
+
+  .bannerSlide {
+    min-height: 340px;
+  }
+
+  .bannerContent {
+    bottom: 2.5rem;
+    left: 1.25rem;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .bannerTitle { font-size: 1.6rem; }
+  .bannerDesc { font-size: 0.84rem; margin-bottom: 1rem; }
+  .bannerBtn { font-size: 0.74rem; padding: 0.6rem 1.4rem; }
 }

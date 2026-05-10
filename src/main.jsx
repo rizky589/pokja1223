@@ -1009,11 +1009,29 @@ function LoginModal({ onClose, onLogin }) {
   const [error, setError] = React.useState("");
   const [showPass, setShowPass] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [activeBars, setActiveBars] = React.useState([]);
 
-  // Generate 50 rotating bars (sesuai style1.css)
+  // 50 bars seperti di login.html
   const NUM_BARS = 50;
   const bars = Array.from({ length: NUM_BARS }, (_, i) => i);
 
+  // Animasi active bar berpindah tiap 100ms — persis seperti animateBars() di login.html
+  React.useEffect(() => {
+    let counter = 0;
+    const interval = setInterval(() => {
+      const current = counter % NUM_BARS;
+      const toRemove = counter > 8 ? (counter - 8) % NUM_BARS : -1;
+      setActiveBars((prev) => {
+        const next = [...prev, current];
+        if (toRemove >= 0) return next.filter((b) => b !== toRemove);
+        return next;
+      });
+      counter++;
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Tutup dengan Escape
   React.useEffect(() => {
     const handleKeyDown = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handleKeyDown);
@@ -1037,22 +1055,34 @@ function LoginModal({ onClose, onLogin }) {
     }, 400);
   };
 
-  return (
-    <div className="modalLayer" role="presentation" onMouseDown={onClose}>
-      <div className="loginContainer" onMouseDown={(e) => e.stopPropagation()}>
+  // Stop propagation helper
+  const stopProp = (e) => e.stopPropagation();
 
-        {/* Rotating bars animation */}
-        <div className="loginCircle" aria-hidden="true">
-          {bars.map((i) => (
-            <span
-              key={i}
-              className="loginBar"
-              style={{ transform: `rotate(${(360 / NUM_BARS) * i}deg) translateY(-130px)` }}
-            />
-          ))}
+  return (
+    /* Overlay: klik di luar loginBox menutup modal */
+    <div
+      className="modalLayer"
+      role="presentation"
+      onClick={onClose}
+      onTouchEnd={(e) => { e.stopPropagation(); onClose(); }}
+    >
+      {/* Wrapper tengah — bukan yang menutup modal */}
+      <div className="loginModalCenter" onClick={stopProp} onTouchStart={stopProp} onTouchEnd={stopProp}>
+
+        {/* Rotating bars — struktur persis login.html */}
+        <div className="loginContainer" aria-hidden="true">
+          <div className="loginCircle">
+            {bars.map((i) => (
+              <span
+                key={i}
+                className={activeBars.includes(i) ? "loginBar active" : "loginBar"}
+                style={{ transform: `rotate(${(360 / NUM_BARS) * i}deg) translateY(-120px)` }}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Login card */}
+        {/* Login card — terpisah dari container bars */}
         <section
           className="loginBox"
           role="dialog"
@@ -1103,7 +1133,7 @@ function LoginModal({ onClose, onLogin }) {
                 onClick={() => setShowPass((v) => !v)}
                 aria-label={showPass ? "Sembunyikan" : "Tampilkan"}
               >
-                {showPass ? <LockKeyhole size={15} /> : <LockKeyhole size={15} />}
+                <LockKeyhole size={15} />
               </button>
             </div>
 
@@ -1119,12 +1149,177 @@ function LoginModal({ onClose, onLogin }) {
   );
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   BANNER CAROUSEL DATA
+   Ganti image path setelah user upload gambar ke folder /public
+───────────────────────────────────────────────────────────────────────── */
+const bannerSlides = [
+  {
+    image: "/banner1.jpg",
+    position: "center center",  // portrait: "center top" | landscape: "center center"
+    tag: "PORTAL KERJA BPS",
+    title: "Selamat Datang di",
+    highlight: "POKJA",
+    description: "Portal Kerja resmi BPS Kabupaten Labuhanbatu Utara. Akses semua aplikasi dan layanan statistik dalam satu tempat.",
+    buttonText: "BUKA PORTAL",
+  },
+  {
+    image: "/banner2.jpg",
+    position: "center center",
+    tag: "STATISTIK Update",
+    title: "Data & Informasi",
+    highlight: "BPS Labuhanbatu Utara",
+    description: "Temukan data statistik terkini untuk mendukung pengambilan keputusan yang lebih akurat dan berbasis data.",
+    buttonText: "Lihat Website",
+    url: "https://labuhanbatuutarakab.bps.go.id",
+  },
+  {
+    image: "/banner3.jpg",
+    position: "center center",
+    tag: "TIM IPDS",
+    title: "Inovasi & Transformasi",
+    highlight: "Digital",
+    description: "Mendorong transformasi digital di lingkungan BPS Kabupaten Labuhanbatu Utara untuk pelayanan yang lebih baik.",
+    buttonText: "Link SE2026",
+    url: "https://sensus.bps.go.id/se2026/",
+  },
+  {
+    image: "/banner4.png",
+    position: "center top",     // ← portrait: tampilkan bagian atas gambar
+    tag: "KEGIATAN BPS",
+    title: "SENSUS EKONOMI",
+    highlight: "2026",
+    description: "Ikuti perkembangan kegiatan survei dan sensus BPS Kabupaten Labuhanbatu Utara tahun 2026.",
+    buttonText: "Link SE2026",
+    url: "https://sensus.bps.go.id/se2026/",
+  },
+  {
+    image: "/banner5.jpg",
+    position: "center top",     // ← portrait: tampilkan bagian atas gambar
+    tag: "PELAYANAN",
+    title: "Layanan",
+    highlight: "Publik",
+    description: "Dapatkan data dan informasi statistik resmi untuk keperluan penelitian, perencanaan, dan kebijakan daerah.",
+    buttonText: "AKSES LAYANAN",
+    url: "https://sensus.bps.go.id/se2026/",
+  },
+  {
+    image: "/banner6.jpg",
+    position: "center center",
+    tag: "PENGUMUMAN",
+    title: "Informasi &",
+    highlight: "Pengumuman",
+    description: "Pantau pengumuman resmi, jadwal kegiatan, dan berita terbaru dari BPS Kabupaten Labuhanbatu Utara.",
+    buttonText: "BACA SELENGKAPNYA",
+    url: "https://sensus.bps.go.id/se2026/",
+  },
+];
+
+
+function BannerCarousel({ onClose, onOpenLogin }) {
+  const [current, setCurrent] = React.useState(0);
+  const [isAnimating, setIsAnimating] = React.useState(false);
+  const total = bannerSlides.length;
+
+  const goTo = (index) => {
+    setIsAnimating(true);
+    setCurrent(index);
+    setTimeout(() => setIsAnimating(false), 400);
+  };
+
+  // Auto-advance setiap 5 detik — pakai functional update, tidak perlu reset interval
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent(c => (c + 1) % total);
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 400);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [total]);
+
+  const slide = bannerSlides[current];
+
+  const handleButton = () => {
+    if (slide.url) {
+      window.open(slide.url, "_blank", "noopener,noreferrer");
+    } else {
+      onClose();
+      onOpenLogin();
+    }
+  };
+
+  return (
+    <div
+      className="bannerOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Banner informasi portal"
+      onClick={onClose}
+    >
+      <div
+        className="bannerCarousel"
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button className="bannerClose" onClick={onClose} aria-label="Tutup">
+          <X size={18} />
+        </button>
+
+        {/* Slide image background */}
+        <div
+          className={`bannerSlide ${isAnimating ? "animating" : ""}`}
+          style={{
+            backgroundImage: `url(${slide.image})`,
+            backgroundPosition: slide.position || "center top",
+          }}
+        >
+          <div className="bannerGradient" />
+
+          <div className="bannerContent">
+            <span className="bannerTag">{slide.tag}</span>
+            <h2 className="bannerTitle">
+              {slide.title}{" "}
+              <span className="bannerHighlight">{slide.highlight}</span>
+            </h2>
+            <p className="bannerDesc">{slide.description}</p>
+            <button className="bannerBtn" onClick={handleButton}>
+              {slide.buttonText}
+            </button>
+          </div>
+        </div>
+
+        {/* Dots navigation */}
+        <div className="bannerDots" role="tablist">
+          {bannerSlides.map((_, i) => (
+            <button
+              key={i}
+              className={`bannerDot ${i === current ? "active" : ""}`}
+              onClick={() => goTo(i)}
+              role="tab"
+              aria-selected={i === current}
+              aria-label={`Slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [query, setQuery] = React.useState("");
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
+  const [isBannerOpen, setIsBannerOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [activeUser, setActiveUser] = React.useState("");
   const [customApps, setCustomApps] = React.useState([]);
+
+  // Auto-tampilkan banner setelah 1 detik
+  React.useEffect(() => {
+    const t = setTimeout(() => setIsBannerOpen(true), 1000);
+    return () => clearTimeout(t);
+  }, []);
   // "loading" | "synced" | "local"
   const [dbStatus, setDbStatus] = React.useState(isSupabaseReady ? "loading" : "local");
 
@@ -1281,6 +1476,13 @@ function App() {
 
       {isLoginOpen ? (
         <LoginModal onClose={() => setIsLoginOpen(false)} onLogin={handleLogin} />
+      ) : null}
+
+      {isBannerOpen && !isAuthenticated ? (
+        <BannerCarousel
+          onClose={() => setIsBannerOpen(false)}
+          onOpenLogin={() => setIsLoginOpen(true)}
+        />
       ) : null}
     </main>
   );
