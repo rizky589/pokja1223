@@ -292,8 +292,10 @@ function StatCard({ item }) {
 }
 
 function InternalAppCard({ app, onEdit, onDelete }) {
+  const isEditable = Boolean(onEdit || onDelete);
+
   return (
-    <article className={app.custom && (onEdit || onDelete) ? "internalAppCard editable" : "internalAppCard"}>
+    <article className={isEditable ? "internalAppCard editable" : "internalAppCard"}>
       <a className="internalAppLink" href={app.href} target="_blank" rel="noopener noreferrer">
         <AppIcon app={app} />
         <span>
@@ -302,11 +304,13 @@ function InternalAppCard({ app, onEdit, onDelete }) {
         </span>
         <ArrowUpRight size={17} />
       </a>
-      {app.custom && onEdit ? (
+      {isEditable ? (
         <div className="cardActions">
-          <button className="editShortcutButton" type="button" onClick={() => onEdit(app)} title="Edit">
-            <Pencil size={15} />
-          </button>
+          {onEdit && (
+            <button className="editShortcutButton" type="button" onClick={() => onEdit(app)} title="Edit">
+              <Pencil size={15} />
+            </button>
+          )}
           {onDelete && (
             <button
               className="deleteShortcutButton"
@@ -809,7 +813,7 @@ function ApplicationsPage({ portalApps, customAppsCount, onAddApp, onUpdateApp, 
 
       <div className="shortcutCounter">
         <span>{customAppsCount}</span>
-        shortcut tambahan tersimpan. Shortcut baru muncul di urutan paling atas.
+        shortcut tersimpan. Shortcut baru muncul di urutan paling atas.
       </div>
 
       <div className="internalAppsGrid expanded">
@@ -1414,21 +1418,34 @@ function App() {
   // "loading" | "synced" | "local"
   const [dbStatus, setDbStatus] = React.useState(isSupabaseReady ? "loading" : "local");
 
+  const [deletedDefaultIds, setDeletedDefaultIds] = React.useState(() => {
+    try {
+      return JSON.parse(window.localStorage.getItem("pokja-deleted-defaults") || "[]");
+    } catch {
+      return [];
+    }
+  });
+
   const portalApps = React.useMemo(() => {
     const map = new Map();
-    publicServices.forEach((item) => map.set(item.id, item));
+    publicServices.forEach((item) => {
+      if (!deletedDefaultIds.includes(item.id)) {
+        map.set(item.id, item);
+      }
+    });
     customApps.forEach((c) => {
+      if (deletedDefaultIds.includes(c.id)) return;
       const match = publicServices.find(
         (p) => p.id === c.id || p.name.toLowerCase().startsWith(c.name.toLowerCase().split(" ")[0])
       );
       if (match) {
-        map.set(match.id, { ...match, ...c, name: match.name, badge: match.badge, description: c.description || match.description });
+        map.set(match.id, { ...match, ...c, name: c.name || match.name, badge: match.badge, description: c.description ?? match.description });
       } else {
         map.set(c.id, c);
       }
     });
     return Array.from(map.values());
-  }, [customApps]);
+  }, [customApps, deletedDefaultIds]);
 
   const filteredApps = portalApps.filter((app) =>
     `${app.name} ${app.description} ${app.badge || ""}`.toLowerCase().includes(query.toLowerCase())
@@ -1493,11 +1510,17 @@ function App() {
 
   // ─── Edit shortcut ───────────────────────────────────────────────────────
   const handleUpdateApp = async (updatedApp) => {
-    setCustomApps((curr) =>
-      curr.map((app) => (app.id === updatedApp.id ? updatedApp : app))
-    );
+    setCustomApps((curr) => {
+      const exists = curr.some((app) => app.id === updatedApp.id);
+      if (exists) {
+        return curr.map((app) => (app.id === updatedApp.id ? updatedApp : app));
+      } else {
+        return [updatedApp, ...curr];
+      }
+    });
     if (isSupabaseReady) {
-      const { error } = await supabase.from("shortcuts").update({
+      const { error } = await supabase.from("shortcuts").upsert({
+        id: updatedApp.id,
         name: updatedApp.name,
         description: updatedApp.description || "",
         href: updatedApp.href || "",
@@ -1505,7 +1528,7 @@ function App() {
         logo_color: updatedApp.logoColor || "blue",
         logo_image: updatedApp.logoImage || "",
         logo_file_name: updatedApp.logoFileName || ""
-      }).eq("id", updatedApp.id);
+      });
       if (error) console.error("Gagal update ke Supabase:", error.message);
     }
   };
@@ -1513,6 +1536,13 @@ function App() {
   // ─── Hapus shortcut ──────────────────────────────────────────────────────
   const handleDeleteApp = async (appId) => {
     setCustomApps((curr) => curr.filter((app) => app.id !== appId));
+    setDeletedDefaultIds((curr) => {
+      const next = [...curr, appId];
+      try {
+        window.localStorage.setItem("pokja-deleted-defaults", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
     if (isSupabaseReady) {
       const { error } = await supabase.from("shortcuts").delete().eq("id", appId);
       if (error) console.error("Gagal hapus dari Supabase:", error.message);
@@ -1530,7 +1560,7 @@ function App() {
       <WorkPortal
         onLogout={() => { setIsAuthenticated(false); setActiveUser(""); }}
         portalApps={portalApps}
-        customAppsCount={customApps.length}
+        customAppsCount={portalApps.length}
         onAddApp={handleAddApp}
         onUpdateApp={handleUpdateApp}
         onDeleteApp={handleDeleteApp}
