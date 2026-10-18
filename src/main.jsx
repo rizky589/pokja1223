@@ -4,8 +4,7 @@ import { supabase, isSupabaseReady } from "./supabase.js";
 
 // ─── KREDENSIAL LOGIN (ganti sesuai kebutuhan) ────────────────────────────────
 const VALID_CREDENTIALS = [
-  { username: "admin", password: "bps1223" },
-  { username: "operator", password: "pokja2026" }
+  { username: "bps1223@bps.go.id", password: "Bps1223" },
 ];
 import {
   ArrowUpRight,
@@ -14,6 +13,7 @@ import {
   BriefcaseBusiness,
   CalendarDays,
   CheckCircle2,
+  ChevronsUp,
   ClipboardList,
   Clock,
   Cloud,
@@ -72,6 +72,38 @@ const logoColorChoices = [
 ];
 
 const apps = [
+];
+
+// ─── DATA LAYANAN PUBLIK ───────────────────────────────────────────────────────
+const publicServices = [
+  {
+    id: "community-bps",
+    name: "Community BPS",
+    badge: "Pusat",
+    description: "",
+    href: "https://community.bps.go.id",
+    logoImage: "",
+    logoColor: "blue",
+    icon: "mark",
+  },
+  {
+    id: "kipapp",
+    name: "KipApp",
+    badge: "Pusat",
+    description: "Aplikasi untuk input SKP harian",
+    href: "https://kinerja.bps.go.id",
+    logoColor: "blue",
+    icon: "mark",
+  },
+  {
+    id: "pst-online",
+    name: "PST Online",
+    badge: "Pusat",
+    description: "Pelayanan Statistik Terpadu Online",
+    href: "https://pelayanan.bps.go.id",
+    logoColor: "orange",
+    icon: "mark",
+  },
 ];
 
 const workMenus = [
@@ -160,15 +192,45 @@ function AppIcon({ app, size = 23 }) {
   const Icon = app.icon;
   const colorClass = app.logoColor ? ` ${app.logoColor}` : "";
 
+  if (app.logoImage) {
+    return (
+      <span className={`appIcon${colorClass}`}>
+        <img src={app.logoImage} alt="" />
+      </span>
+    );
+  }
+
+  if (Icon === "chevrons" || app.id === "kipapp" || (app.name && app.name.toLowerCase().includes("kipapp"))) {
+    return (
+      <span className="appIcon green">
+        <ChevronsUp size={24} color="#10b981" strokeWidth={2.8} />
+      </span>
+    );
+  }
+
+  if (Icon === "pst" || app.id === "pst-online" || (app.name && app.name.toLowerCase().includes("pst"))) {
+    return (
+      <span className="appIcon orange">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 11h16M4 16h16" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M4 11h11" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M4 16h7" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      </span>
+    );
+  }
+
+  if (Icon === "mark" || !Icon || Icon === "grid") {
+    return (
+      <span className={`appIcon${colorClass}`}>
+        <BpsMark compact />
+      </span>
+    );
+  }
+
   return (
     <span className={`appIcon${colorClass}`}>
-      {app.logoImage ? (
-        <img src={app.logoImage} alt="" />
-      ) : Icon === "mark" ? (
-        <BpsMark compact />
-      ) : (
-        <Icon size={size} />
-      )}
+      <Icon size={size} />
     </span>
   );
 }
@@ -196,14 +258,21 @@ function PortalLogo({ small = false }) {
   );
 }
 
-function AppCard({ app }) {
+function AppCard({ app, index = 0 }) {
   return (
     <a className="appCard" href={app.href} target="_blank" rel="noopener noreferrer">
-      <AppIcon app={app} size={24} />
-      <span className="appCopy">
-        <strong>{app.name}</strong>
-        <small>{app.description}</small>
+      <span className="appCardNum">{String(index + 1).padStart(2, "0")}</span>
+      <span className="appCardIconWrap">
+        <AppIcon app={app} size={22} />
       </span>
+      <span className="appCopy">
+        <span className="appCardNameRow">
+          <strong className="appCardTitle">{app.name}</strong>
+          {app.badge && <span className="appCardBadge">{app.badge}</span>}
+        </span>
+        {app.description && <small className="appCardDesc">{app.description}</small>}
+      </span>
+      <ArrowUpRight size={15} className="appCardArrow" />
     </a>
   );
 }
@@ -1004,7 +1073,7 @@ function WorkPortal({ onLogout, portalApps, customAppsCount, onAddApp, onUpdateA
 }
 
 function LoginModal({ onClose, onLogin }) {
-  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
   const [showPass, setShowPass] = React.useState(false);
@@ -1044,12 +1113,12 @@ function LoginModal({ onClose, onLogin }) {
     setLoading(true);
     setTimeout(() => {
       const valid = VALID_CREDENTIALS.find(
-        (c) => c.username === username.trim() && c.password === password
+        (c) => c.username === email.trim() && c.password === password
       );
       if (valid) {
-        onLogin(username.trim());
+        onLogin(email.trim());
       } else {
-        setError("Username atau password salah. Coba lagi.");
+        setError("Email atau password salah. Coba lagi.");
       }
       setLoading(false);
     }, 400);
@@ -1098,7 +1167,7 @@ function LoginModal({ onClose, onLogin }) {
             <img src="/logobps.png" alt="BPS" className="loginLogoImg" />
           </div>
 
-          <h2 id="login-title" className="loginTitle">MASUK PORTAL</h2>
+          <h2 id="login-title" className="loginTitle">Portal Kerja</h2>
           <p className="loginSubtitle">BPS Kabupaten Labuhanbatu Utara</p>
 
           {error && (
@@ -1106,35 +1175,43 @@ function LoginModal({ onClose, onLogin }) {
           )}
 
           <form className="loginForm2" onSubmit={handleSubmit}>
-            <div className="loginInputGroup">
-              <input
-                type="text"
-                placeholder="Username"
-                autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-              <span className="loginInputIcon"><User size={15} /></span>
+            <div className="loginFieldGroup">
+              <label className="loginLabel" htmlFor="login-email">Email</label>
+              <div className="loginInputGroup">
+                <input
+                  id="login-email"
+                  type="email"
+                  placeholder="contoh@bps.go.id"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <span className="loginInputIcon"><User size={15} /></span>
+              </div>
             </div>
 
-            <div className="loginInputGroup">
-              <input
-                type={showPass ? "text" : "password"}
-                placeholder="Password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <button
-                type="button"
-                className="loginInputIcon loginTogglePass"
-                onClick={() => setShowPass((v) => !v)}
-                aria-label={showPass ? "Sembunyikan" : "Tampilkan"}
-              >
-                <LockKeyhole size={15} />
-              </button>
+            <div className="loginFieldGroup">
+              <label className="loginLabel" htmlFor="login-password">Password</label>
+              <div className="loginInputGroup">
+                <input
+                  id="login-password"
+                  type={showPass ? "text" : "password"}
+                  placeholder="Masukkan password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="loginInputIcon loginTogglePass"
+                  onClick={() => setShowPass((v) => !v)}
+                  aria-label={showPass ? "Sembunyikan" : "Tampilkan"}
+                >
+                  <LockKeyhole size={15} />
+                </button>
+              </div>
             </div>
 
             <button className="loginSubmitBtn" type="submit" disabled={loading}>
@@ -1160,7 +1237,7 @@ const bannerSlides = [
     tag: "PORTAL KERJA BPS",
     title: "Selamat Datang di",
     highlight: "POKJA",
-    description: "Portal Kerja resmi BPS Kabupaten Labuhanbatu Utara. Akses semua aplikasi dan layanan statistik dalam satu tempat.",
+    description: "Portal Kerja resmi BPS Kabupaten Labuhanbatu Utara. Akses semua aplikasi dan layanan statistik dalam satu pintu.",
     buttonText: "BUKA PORTAL",
   },
   {
@@ -1314,6 +1391,20 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [activeUser, setActiveUser] = React.useState("");
   const [customApps, setCustomApps] = React.useState([]);
+  const searchInputRef = React.useRef(null);
+
+  // Shortcut Ctrl+F untuk fokus ke input pencarian
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Auto-tampilkan banner setelah 1 detik
   React.useEffect(() => {
@@ -1323,9 +1414,24 @@ function App() {
   // "loading" | "synced" | "local"
   const [dbStatus, setDbStatus] = React.useState(isSupabaseReady ? "loading" : "local");
 
-  const portalApps = React.useMemo(() => [...customApps, ...apps], [customApps]);
+  const portalApps = React.useMemo(() => {
+    const map = new Map();
+    publicServices.forEach((item) => map.set(item.id, item));
+    customApps.forEach((c) => {
+      const match = publicServices.find(
+        (p) => p.id === c.id || p.name.toLowerCase().startsWith(c.name.toLowerCase().split(" ")[0])
+      );
+      if (match) {
+        map.set(match.id, { ...match, ...c, name: match.name, badge: match.badge, description: c.description || match.description });
+      } else {
+        map.set(c.id, c);
+      }
+    });
+    return Array.from(map.values());
+  }, [customApps]);
+
   const filteredApps = portalApps.filter((app) =>
-    `${app.name} ${app.description}`.toLowerCase().includes(query.toLowerCase())
+    `${app.name} ${app.description} ${app.badge || ""}`.toLowerCase().includes(query.toLowerCase())
   );
 
   // ─── Load shortcuts dari Supabase (atau localStorage sebagai fallback) ────
@@ -1441,36 +1547,56 @@ function App() {
 
       <header className="portalHeader">
         <PortalLogo />
-        <button className="loginButton" type="button" onClick={() => setIsLoginOpen(true)}>
-          <LogIn size={16} />
-          Masuk Portal
-        </button>
+        <div className="headerRight">
+          <div className="headerDateBox">
+            <span className="headerDay">{new Date().toLocaleDateString("id-ID", { weekday: "long" })}</span>
+            <span className="headerDate">{new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
+          </div>
+          <button className="loginButton" type="button" onClick={() => setIsLoginOpen(true)}>
+            <LogIn size={16} />
+            Masuk Portal
+          </button>
+        </div>
       </header>
 
       <section className="heroSection" aria-labelledby="portal-title">
         <h1 id="portal-title">POKJA</h1>
-        <p>Portal Kerja Badan Pusat Statistik Kabupaten Labuhanbatu Utara</p>
+        <p>Portal Labura: satu pintu ke aplikasi, arsip, dan data kerja BPS Kabupaten Labuhanbatu Utara</p>
 
-        <label className="searchBox" aria-label="Cari aplikasi">
+        <label className="searchBox" aria-label="Cari aplikasi dan Layanan Publik">
           <Search size={17} />
           <input
+            ref={searchInputRef}
             type="search"
-            placeholder="Cari aplikasi..."
+            placeholder="Cari aplikasi, Layanan Publik... (Ctrl+F)"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
 
-        <div className="appGrid" aria-label="Daftar aplikasi portal">
-          {(filteredApps.length ? filteredApps : portalApps).map((app) => (
-            <AppCard app={app} key={app.id ?? app.name} />
-          ))}
+        <div className="layananContainer">
+          <div className="layananHeaderRow">
+            <h2 className="layananMainTitle">Layanan publik</h2>
+            <span className="layananCountText">
+              {filteredApps.length} dari {portalApps.length} layanan
+            </span>
+          </div>
+          <div className="layananDividerLine" />
+
+          <div className="appGrid" aria-label="Daftar aplikasi portal">
+            {filteredApps.map((app, i) => (
+              <AppCard app={app} key={app.id ?? app.name} index={i} />
+            ))}
+            {filteredApps.length === 0 && (
+              <p className="pubLayananEmpty">Tidak ada layanan yang cocok dengan pencarian.</p>
+            )}
+          </div>
         </div>
       </section>
 
       <footer className="portalFooter">
         <p className="copyright" style={{ textAlign: "center" }}>
-          &copy; 2026 TIM IPDS. All rights reserved.
+          &copy; 2026 TIM IPDS. All right reserved.
         </p>
       </footer>
 

@@ -51,7 +51,7 @@ button {
 
 .portalShell {
   display: grid;
-  grid-template-rows: 64px minmax(420px, 1fr) auto;
+  grid-template-rows: 64px minmax(420px, 1fr) auto auto;
   min-height: 100vh;
   overflow: hidden;
   position: relative;
@@ -248,6 +248,191 @@ button {
   border-color: rgba(255, 255, 255, 0.35);
   transform: translateY(-1px);
 }
+/* ─── Header Right (date + login btn) ─── */
+.headerRight {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+}
+
+.headerDateBox {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: right;
+}
+
+.headerDay {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+}
+
+.headerDate {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ─── Layanan Publik Section ─── */
+.pubLayananSection {
+  background: rgba(10, 14, 28, 0.82);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 2rem clamp(0.85rem, 5vw, 8.6rem) 2.5rem;
+}
+
+.pubLayananHeader {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.pubLayananTitle {
+  color: #f0f4fa;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.pubLayananMeta {
+  align-items: center;
+  display: flex;
+  gap: 0.85rem;
+}
+
+.pubLayananCount {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.pubLayananSearch {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.45);
+  display: flex;
+  gap: 0.45rem;
+  padding: 0.3rem 0.85rem;
+  transition: border-color 0.2s;
+}
+
+.pubLayananSearch:focus-within {
+  border-color: rgba(255, 165, 0, 0.45);
+  color: #ffa500;
+}
+
+.pubLayananSearch input {
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 0.78rem;
+  outline: 0;
+  width: 170px;
+}
+
+.pubLayananSearch input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.pubLayananDivider {
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  margin-bottom: 0.2rem;
+}
+
+.pubLayananGrid {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.pubLayananItem {
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: inherit;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: 28px 34px 1fr 18px;
+  padding: 1rem 0.75rem;
+  text-decoration: none;
+  transition: background 0.18s;
+}
+
+.pubLayananItem:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pubLayananNum {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding-top: 2px;
+}
+
+.pubLayananIcon {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.pubLayananInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.pubLayananName {
+  align-items: center;
+  color: #e8edf5;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  font-weight: 600;
+  gap: 0.45rem;
+}
+
+.pubLayananBadge {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 1px 6px;
+}
+
+.pubLayananDesc {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.pubLayananArrow {
+  color: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: color 0.18s, transform 0.18s;
+}
+
+.pubLayananItem:hover .pubLayananArrow {
+  color: #ffa500;
+  transform: translate(2px, -2px);
+}
+
+.pubLayananEmpty {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.85rem;
+  grid-column: 1 / -1;
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
 
 .heroSection {
   align-items: center;
@@ -288,10 +473,11 @@ button {
   gap: 0.7rem;
   height: 43px;
   margin-top: 1.3rem;
-  max-width: 345px;
+  margin-bottom: 2.2rem;
+  max-width: 460px;
   order: 3;
-  padding: 0 1rem;
-  width: min(100%, 345px);
+  padding: 0 1.15rem;
+  width: min(100%, 460px);
 }
 
 .searchBox:focus-within {
@@ -312,38 +498,143 @@ button {
   color: #abb6c8;
 }
 
-.appGrid {
-  display: grid;
-  gap: clamp(0.75rem, 1.35vw, 1.15rem);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-top: 1.5rem;
+/* ─── Layanan Publik Container (persis seperti contoh gambar) ─── */
+.layananContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
   max-width: 1085px;
   order: 4;
+  text-align: left;
+  width: 100%;
+}
+
+.layananHeaderRow {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  width: 100%;
+}
+
+.layananMainTitle {
+  color: #ffffff;
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  line-height: 1.1;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.layananCountText {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+  font-weight: 400;
+  padding-bottom: 3px;
+  white-space: nowrap;
+}
+
+.layananDividerLine {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 0.2rem;
+  width: 100%;
+}
+
+.appGrid {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 0;
   width: 100%;
 }
 
 .appCard {
-  align-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.075));
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  display: flex;
-  gap: 1rem;
-  min-height: 72px;
-  overflow: hidden;
-  padding: 0.92rem 1rem;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: inherit;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 26px 44px 1fr 18px;
+  padding: 1.1rem 0.65rem;
   text-align: left;
-  transition:
-    background 170ms ease,
-    border-color 170ms ease,
-    transform 170ms ease;
+  text-decoration: none;
+  transition: background 150ms ease;
 }
 
 .appCard:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.19), rgba(255, 255, 255, 0.11));
-  border-color: rgba(255, 255, 255, 0.28);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.appCardNum {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding-top: 10px;
+}
+
+.appCardIconWrap {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.appCardIconWrap .appIcon {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  min-width: 44px;
+  width: 44px;
+}
+
+.appCardNameRow {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.appCardTitle {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.appCardBadge {
+  background: #0f2c4c;
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  border-radius: 4px;
+  color: #60a5fa;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 1px 6px;
+}
+
+.appCardDesc {
+  color: rgba(255, 255, 255, 0.52);
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+
+.appCardArrow {
+  color: rgba(255, 255, 255, 0.28);
+  flex-shrink: 0;
+  margin-top: 8px;
+  transition: color 0.15s, transform 0.15s;
+}
+
+.appCard:hover .appCardArrow {
+  color: #ffa500;
+  transform: translate(2px, -2px);
 }
 
 .appIcon {
@@ -397,21 +688,15 @@ button {
 }
 
 .appCopy strong {
-  color: #fff;
-  font-size: 0.92rem;
-  font-weight: 850;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #e8edf5;
+  font-size: 0.87rem;
+  font-weight: 650;
 }
 
 .appCopy small {
-  color: #c5cedd;
-  font-size: 0.78rem;
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.76rem;
+  line-height: 1.35;
 }
 
 .copyright {
@@ -611,6 +896,22 @@ button {
 .loginForm2 {
   display: grid;
   gap: 1.5rem;
+}
+
+/* Stacked Field Groups (label di atas input) */
+.loginFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.loginLabel {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding-left: 4px;
+  text-transform: uppercase;
 }
 
 .loginInputGroup {
@@ -2098,7 +2399,9 @@ button {
     grid-template-rows: 64px minmax(560px, 1fr) auto;
   }
 
-  .appGrid,
+  .appGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .statGrid,
   .internalAppsGrid,
   .internalAppsGrid.expanded,
@@ -2169,16 +2472,15 @@ button {
   }
 
   .appGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.55rem;
-    margin-top: 0.9rem;
+    grid-template-columns: 1fr;
   }
 
   .appCard {
-    min-height: 60px;
-    padding: 0.65rem 0.75rem;
+    border-radius: 0;
     gap: 0.6rem;
-    border-radius: 12px;
+    grid-template-columns: 24px 40px 1fr 16px;
+    min-height: auto;
+    padding: 0.85rem 0.35rem;
   }
 
   .appIcon {
@@ -2455,8 +2757,7 @@ button {
 /* ── Kecil sekali (≤ 400px) ──────────────────────────────────────────── */
 @media (max-width: 400px) {
   .appGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.45rem;
+    grid-template-columns: 1fr;
   }
 
   .appCard {
