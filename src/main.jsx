@@ -1394,7 +1394,7 @@ function App() {
   const [isBannerOpen, setIsBannerOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [activeUser, setActiveUser] = React.useState("");
-  const [customApps, setCustomApps] = React.useState([]);
+  const [customApps, setCustomApps] = React.useState(() => loadSavedShortcutsLocal());
   const searchInputRef = React.useRef(null);
 
   // Shortcut Ctrl+F untuk fokus ke input pencarian
@@ -1462,7 +1462,16 @@ function App() {
           .order("created_at", { ascending: false });
 
         if (!error && data) {
-          setCustomApps(data.map(rowToApp));
+          const loaded = data.map(rowToApp);
+          setCustomApps(loaded);
+          try {
+            const storable = loaded.map(
+              ({ id, name, description, href, logoIcon, logoColor, logoImage, logoFileName }) => ({
+                id, name, description, href, logoIcon, logoColor, logoImage, logoFileName
+              })
+            );
+            window.localStorage.setItem("pokja-shortcuts", JSON.stringify(storable));
+          } catch {}
           setDbStatus("synced");
         } else {
           console.warn("Supabase error, fallback ke localStorage:", error);
